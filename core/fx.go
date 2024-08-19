@@ -5,8 +5,8 @@ import (
 
 	"github.com/hamstag/fintech/core/config"
 	"github.com/hamstag/fintech/core/db"
-	"github.com/hamstag/fintech/core/http"
-	"github.com/hamstag/fintech/core/redis"
+	"github.com/hamstag/fintech/core/httpfx"
+	"github.com/hamstag/fintech/core/redisfx"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
@@ -20,9 +20,10 @@ var Module = fx.Module("core",
 			fx.As(new(context.Context)),
 		),
 		zap.NewProduction,
+		config.New,
+		redisfx.New,
+		db.New,
+		httpfx.NewRouter,
+		httpfx.NewServer,
 	),
-	config.Module,
-	redis.Module,
-	db.Module,
-	http.Module,
 )

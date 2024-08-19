@@ -21,13 +21,13 @@ type (
 	}
 
 	UserRepoImpl struct {
-		db db.Database
+		db *db.Database
 	}
 	WalletRepoImpl struct {
-		db db.Database
+		db *db.Database
 	}
 	TransactionRepoImpl struct {
-		db db.Database
+		db *db.Database
 	}
 )
 

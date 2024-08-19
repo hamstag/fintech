@@ -5,11 +5,6 @@ import (
 )
 
 var Module = fx.Module("wallet",
-	fx.Provide(
-		fx.Annotate(
-			NewWalletService,
-			fx.As(new(WalletService)),
-		),
-	),
+	fx.Provide(New),
 	fx.Invoke(HTTPHandler),
 )

@@ -1,4 +1,4 @@
-package http
+package httpfx
 
 import (
 	"github.com/go-chi/chi/v5"
@@ -6,15 +6,30 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"github.com/hamstag/fintech/core/config"
+	"go.uber.org/fx"
 )
 
-type Router struct {
-	*chi.Mux
+type (
+	Router struct {
+		*chi.Mux
 
-	api *chi.Mux
-}
+		api *chi.Mux
+	}
 
-func NewRouter(cfg *config.Config) (*Router, error) {
+	RouterParams struct {
+		fx.In
+
+		Config *config.Config
+	}
+
+	RouterResult struct {
+		fx.Out
+
+		Router *Router
+	}
+)
+
+func NewRouter(p RouterParams) (RouterResult, error) {
 	r := chi.NewRouter()
 
 	r.Use(
@@ -29,9 +44,9 @@ func NewRouter(cfg *config.Config) (*Router, error) {
 	)
 
 	apiRouter := chi.NewRouter()
-	r.Mount(cfg.APIPrefix, apiRouter)
+	r.Mount(p.Config.APIPrefix, apiRouter)
 
-	return &Router{r, apiRouter}, nil
+	return RouterResult{Router: &Router{r, apiRouter}}, nil
 }
 
 func (r *Router) Api() *chi.Mux {

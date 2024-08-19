@@ -6,6 +6,7 @@ import (
 
 	"github.com/hamstag/fintech/core/db"
 	gonanoid "github.com/matoous/go-nanoid/v2"
+	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
@@ -24,16 +25,31 @@ type (
 
 		log *zap.Logger
 	}
+
+	Params struct {
+		fx.In
+
+		Database *db.Database
+		Logger   *zap.Logger
+	}
+
+	Result struct {
+		fx.Out
+
+		WalletService WalletService
+	}
 )
 
-func NewWalletService(db db.Database, log *zap.Logger) *WalletServiceImpl {
-	return &WalletServiceImpl{
-		userRepo:        &UserRepoImpl{db: db},
-		walletRepo:      &WalletRepoImpl{db: db},
-		transactionRepo: &TransactionRepoImpl{db: db},
+func New(p Params) (Result, error) {
+	return Result{
+		WalletService: &WalletServiceImpl{
+			userRepo:        &UserRepoImpl{db: p.Database},
+			walletRepo:      &WalletRepoImpl{db: p.Database},
+			transactionRepo: &TransactionRepoImpl{db: p.Database},
 
-		log: log,
-	}
+			log: p.Logger,
+		},
+	}, nil
 }
 
 func (s *WalletServiceImpl) RegisterCustomer(cmd *RegisterCustomer) (string, error) {

@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/caarlos0/env/v11"
 	_ "github.com/joho/godotenv/autoload"
+	"go.uber.org/fx"
 )
 
 type Config struct {
@@ -14,9 +15,15 @@ type Config struct {
 	DatabaseURL string `env:"DATABASE_URL,notEmpty"`
 }
 
-func NewConfig() (*Config, error) {
+type Result struct {
+	fx.Out
+
+	Config *Config
+}
+
+func New() (Result, error) {
 	cfg, err := env.ParseAsWithOptions[Config](env.Options{
 		RequiredIfNoDef: true,
 	})
-	return &cfg, err
+	return Result{Config: &cfg}, err
 }
